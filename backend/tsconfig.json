@@ -3,6 +3,10 @@
     "rootDir": "./src",
     "outDir": "./dist",
 
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "target": "ES2022",
