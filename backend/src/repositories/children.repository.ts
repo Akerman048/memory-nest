@@ -54,6 +54,9 @@ export const findChildByIdRepository = async (
     },
     include: {
       members: {
+        where: {
+          userId,
+        },
         select: {
           userId: true,
           role: true,
