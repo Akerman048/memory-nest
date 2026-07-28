@@ -14,7 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/health", healthRouter);
-app.use('/children', childrenRouter)
+app.use("/api/children", childrenRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);

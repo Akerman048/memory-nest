@@ -1,3 +1,4 @@
+import { canManageChild } from "@/lib/permissions.js";
 import {
   createChildRepository,
   deleteChildRepository,
@@ -69,9 +70,9 @@ export const updateChildService = async (
     (member) => member.userId === userId,
   );
 
-  if (currentMember?.role !== "PARENT" && currentMember?.role !== "GUARDIAN") {
-    throw new Error("You do not have permission to update this child");
-  }
+if (!canManageChild(currentMember?.role)) {
+  throw new Error("You do not have permission to update this child");
+}
 
   const data: {
     name?: string;
@@ -130,3 +131,5 @@ export const deleteChildService = async (userId: number, childId: number) => {
 
   return deleteChildRepository(childId);
 };
+
+

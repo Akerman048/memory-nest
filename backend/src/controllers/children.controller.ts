@@ -1,11 +1,12 @@
-import type { Request, Response, NextFunction } from "express";
+import type { NextFunction, Request, Response } from "express";
+
 import type { ChildParams } from "../types/express.types.js";
 import {
-  getChildrenService,
-  getChildByIdService,
-  updateChildService,
   createChildService,
   deleteChildService,
+  getChildByIdService,
+  getChildrenService,
+  updateChildService,
 } from "../services/children.service.js";
 
 const parsePositiveInteger = (value: string | undefined): number | null => {
@@ -23,7 +24,7 @@ const parsePositiveInteger = (value: string | undefined): number | null => {
 };
 
 export const getChildren = async (
-  req: Request,
+  _req: Request,
   res: Response,
   next: NextFunction,
 ) => {
@@ -31,9 +32,11 @@ export const getChildren = async (
     const userId = 1;
     const children = await getChildrenService(userId);
 
-    res.json(children);
+    return res.status(200).json({
+      data: children,
+    });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
 
@@ -43,55 +46,52 @@ export const getChildById = async (
   next: NextFunction,
 ) => {
   try {
-    const userId = parsePositiveInteger(req.params.childId);
+    const userId = 1;
     const childId = parsePositiveInteger(req.params.childId);
 
-    if (!userId || !childId) {
-      res.status(400).json({
-        message: "Invalid user ID or child ID",
+    if (!childId) {
+      return res.status(400).json({
+        error: {
+          code: "INVALID_CHILD_ID",
+          message: "Invalid child ID",
+        },
       });
-      return;
     }
 
     const child = await getChildByIdService(userId, childId);
 
     if (!child) {
-      res.status(404).json({
-        message: "Child not found",
+      return res.status(404).json({
+        error: {
+          code: "CHILD_NOT_FOUND",
+          message: "Child not found",
+        },
       });
-      return;
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       data: child,
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
 
 export const createChild = async (
-  req: Request<ChildParams>,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    const userId = parsePositiveInteger(req.params.userId);
-    if (!userId) {
-      res.status(400).json({
-        message: "Invalid user ID",
-      });
-
-      return;
-    }
+    const userId = 1;
 
     const child = await createChildService(userId, req.body);
 
-    res.status(201).json({
+    return res.status(201).json({
       data: child,
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
 
@@ -101,28 +101,34 @@ export const updateChild = async (
   next: NextFunction,
 ) => {
   try {
-    const userId = parsePositiveInteger(req.params.userId);
-
+    const userId = 1;
     const childId = parsePositiveInteger(req.params.childId);
 
-    if (!userId || !childId) {
-      res.status(400).json({
-        message: "Invalid user ID or child ID",
+    if (!childId) {
+      return res.status(400).json({
+        error: {
+          code: "INVALID_CHILD_ID",
+          message: "Invalid child ID",
+        },
       });
-
-      return;
     }
 
     const child = await updateChildService(userId, childId, req.body);
 
     if (!child) {
-      res.status(404).json({ message: "Child not found" });
-      return;
+      return res.status(404).json({
+        error: {
+          code: "CHILD_NOT_FOUND",
+          message: "Child not found",
+        },
+      });
     }
 
-    res.status(200).json({ data: child });
+    return res.status(200).json({
+      data: child,
+    });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
 
@@ -132,37 +138,31 @@ export const deleteChild = async (
   next: NextFunction,
 ) => {
   try {
-    const userId = parsePositiveInteger(
-      req.params.userId,
-    );
+    const userId = 1;
+    const childId = parsePositiveInteger(req.params.childId);
 
-    const childId = parsePositiveInteger(
-      req.params.childId,
-    );
-
-    if (!userId || !childId) {
-      res.status(400).json({
-        message: "Invalid user ID or child ID",
+    if (!childId) {
+      return res.status(400).json({
+        error: {
+          code: "INVALID_CHILD_ID",
+          message: "Invalid child ID",
+        },
       });
-
-      return;
     }
 
-    const deletedChild = await deleteChildService(
-      userId,
-      childId,
-    );
+    const deletedChild = await deleteChildService(userId, childId);
 
     if (!deletedChild) {
-      res.status(404).json({
-        message: "Child not found",
+      return res.status(404).json({
+        error: {
+          code: "CHILD_NOT_FOUND",
+          message: "Child not found",
+        },
       });
-
-      return;
     }
 
-    res.status(204).send();
+    return res.status(204).send();
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
