@@ -17,7 +17,7 @@ export const errorMiddleware = (
       },
     });
   } else {
-    res.status(500).json({
+   return res.status(500).json({
       error: {
         code: "INTERNAL_SERVER_ERROR",
         message: "Something went wrong",
