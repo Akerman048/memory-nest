@@ -10,6 +10,10 @@ healthRouter.get("/live", (_req, res) => {
   });
 });
 
+
+
+
+
 healthRouter.get("/ready", async (_req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
