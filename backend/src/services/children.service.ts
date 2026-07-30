@@ -1,4 +1,6 @@
+import { AppError } from "@/errors/app-error.js";
 import { canManageChild } from "@/lib/permissions.js";
+
 import {
   createChildRepository,
   deleteChildRepository,
@@ -21,8 +23,24 @@ export const getChildrenService = async (userId: number) => {
   return findChildrenByUserIdRepository(userId);
 };
 
-export const getChildByIdService = async (userId: number, childId: number) => {
-  return findChildByIdRepository(childId, userId);
+export const getChildByIdService = async (
+  userId: number,
+  childId: number,
+) => {
+  const child = await findChildByIdRepository(
+    childId,
+    userId,
+  );
+
+  if (!child) {
+    throw new AppError(
+      404,
+      "CHILD_NOT_FOUND",
+      "Child not found",
+    );
+  }
+
+  return child;
 };
 
 export const createChildService = async (
@@ -32,7 +50,11 @@ export const createChildService = async (
   const name = input.name.trim();
 
   if (!name) {
-    throw new Error("Child name is required");
+    throw new AppError(
+      400,
+      "INVALID_CHILD_NAME",
+      "Child name is required",
+    );
   }
 
   let birthDate: Date | null = null;
@@ -41,11 +63,19 @@ export const createChildService = async (
     birthDate = new Date(input.birthDate);
 
     if (Number.isNaN(birthDate.getTime())) {
-      throw new Error("Invalid birth date");
+      throw new AppError(
+        400,
+        "INVALID_BIRTH_DATE",
+        "Invalid birth date",
+      );
     }
 
     if (birthDate > new Date()) {
-      throw new Error("Birth date cannot be in the future");
+      throw new AppError(
+        400,
+        "BIRTH_DATE_IN_FUTURE",
+        "Birth date cannot be in the future",
+      );
     }
   }
 
@@ -60,19 +90,30 @@ export const updateChildService = async (
   childId: number,
   input: UpdateChildInput,
 ) => {
-  const child = await findChildByIdRepository(childId, userId);
+  const child = await findChildByIdRepository(
+    childId,
+    userId,
+  );
 
   if (!child) {
-    return null;
+    throw new AppError(
+      404,
+      "CHILD_NOT_FOUND",
+      "Child not found",
+    );
   }
 
   const currentMember = child.members.find(
     (member) => member.userId === userId,
   );
 
-if (!canManageChild(currentMember?.role)) {
-  throw new Error("You do not have permission to update this child");
-}
+  if (!canManageChild(currentMember?.role)) {
+    throw new AppError(
+      403,
+      "CHILD_UPDATE_FORBIDDEN",
+      "You do not have permission to update this child",
+    );
+  }
 
   const data: {
     name?: string;
@@ -83,7 +124,11 @@ if (!canManageChild(currentMember?.role)) {
     const name = input.name.trim();
 
     if (!name) {
-      throw new Error("Child name cannot be empty");
+      throw new AppError(
+        400,
+        "INVALID_CHILD_NAME",
+        "Child name cannot be empty",
+      );
     }
 
     data.name = name;
@@ -96,11 +141,19 @@ if (!canManageChild(currentMember?.role)) {
       const birthDate = new Date(input.birthDate);
 
       if (Number.isNaN(birthDate.getTime())) {
-        throw new Error("Invalid birth date");
+        throw new AppError(
+          400,
+          "INVALID_BIRTH_DATE",
+          "Invalid birth date",
+        );
       }
 
       if (birthDate > new Date()) {
-        throw new Error("Birth date cannot be in the future");
+        throw new AppError(
+          400,
+          "BIRTH_DATE_IN_FUTURE",
+          "Birth date cannot be in the future",
+        );
       }
 
       data.birthDate = birthDate;
@@ -108,17 +161,31 @@ if (!canManageChild(currentMember?.role)) {
   }
 
   if (Object.keys(data).length === 0) {
-    throw new Error("No fields provided for update");
+    throw new AppError(
+      400,
+      "NO_UPDATE_FIELDS",
+      "No fields provided for update",
+    );
   }
 
   return updateChildRepository(childId, data);
 };
 
-export const deleteChildService = async (userId: number, childId: number) => {
-  const child = await findChildByIdRepository(childId, userId);
+export const deleteChildService = async (
+  userId: number,
+  childId: number,
+) => {
+  const child = await findChildByIdRepository(
+    childId,
+    userId,
+  );
 
   if (!child) {
-    return null;
+    throw new AppError(
+      404,
+      "CHILD_NOT_FOUND",
+      "Child not found",
+    );
   }
 
   const currentMember = child.members.find(
@@ -126,10 +193,12 @@ export const deleteChildService = async (userId: number, childId: number) => {
   );
 
   if (currentMember?.role !== "PARENT") {
-    throw new Error("Only a parent can delete this child");
+    throw new AppError(
+      403,
+      "CHILD_DELETE_FORBIDDEN",
+      "Only a parent can delete this child",
+    );
   }
 
   return deleteChildRepository(childId);
 };
-
-
