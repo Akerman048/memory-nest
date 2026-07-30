@@ -7,11 +7,13 @@ import {
   getChildren,
   updateChild,
 } from "../controllers/children.controller.js";
-import { validateBody } from "@/middleware/validate.middleware.js";
+import { validateBody } from "@/middleware/validateBody.middleware.js";
 import {
+  childIdParamSchema,
   createChildSchema,
   updateChildSchema,
 } from "@/validations/child.validation.js";
+import { validateParams } from "@/middleware/validateParams.middleware.js";
 
 export const childrenRouter = Router();
 
@@ -19,8 +21,21 @@ childrenRouter.get("/", getChildren);
 
 childrenRouter.post("/", validateBody(createChildSchema), createChild);
 
-childrenRouter.get("/:childId", getChildById);
+childrenRouter.get(
+  "/:childId",
+  validateParams(childIdParamSchema),
+  getChildById,
+);
 
-childrenRouter.patch("/:childId", validateBody(updateChildSchema), updateChild);
+childrenRouter.patch(
+  "/:childId",
+  validateParams(childIdParamSchema),
+  validateBody(updateChildSchema),
+  updateChild,
+);
 
-childrenRouter.delete("/:childId", deleteChild);
+childrenRouter.delete(
+  "/:childId",
+  validateParams(childIdParamSchema),
+  deleteChild,
+);

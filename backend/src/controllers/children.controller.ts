@@ -8,6 +8,7 @@ import {
   getChildrenService,
   updateChildService,
 } from "../services/children.service.js";
+import { AppError } from "@/errors/app-error.js";
 
 const parsePositiveInteger = (value: string | undefined): number | null => {
   if (!value) {
@@ -50,23 +51,15 @@ export const getChildById = async (
     const childId = parsePositiveInteger(req.params.childId);
 
     if (!childId) {
-      return res.status(400).json({
-        error: {
-          code: "INVALID_CHILD_ID",
-          message: "Invalid child ID",
-        },
-      });
+      throw new AppError(400, "INVALID_CHILD_ID", "Invalid child ID");
     }
 
     const child = await getChildByIdService(userId, childId);
 
     if (!child) {
-      return res.status(404).json({
-        error: {
-          code: "CHILD_NOT_FOUND",
-          message: "Child not found",
-        },
-      });
+      if (!child) {
+        throw new AppError(404, "CHILD_NOT_FOUND", "Child not found");
+      }
     }
 
     return res.status(200).json({
@@ -105,23 +98,13 @@ export const updateChild = async (
     const childId = parsePositiveInteger(req.params.childId);
 
     if (!childId) {
-      return res.status(400).json({
-        error: {
-          code: "INVALID_CHILD_ID",
-          message: "Invalid child ID",
-        },
-      });
+      throw new AppError(400, "INVALID_CHILD_ID", "Invalid child ID");
     }
 
     const child = await updateChildService(userId, childId, req.body);
 
     if (!child) {
-      return res.status(404).json({
-        error: {
-          code: "CHILD_NOT_FOUND",
-          message: "Child not found",
-        },
-      });
+      throw new AppError(404, "CHILD_NOT_FOUND", "Child not found");
     }
 
     return res.status(200).json({
@@ -153,12 +136,7 @@ export const deleteChild = async (
     const deletedChild = await deleteChildService(userId, childId);
 
     if (!deletedChild) {
-      return res.status(404).json({
-        error: {
-          code: "CHILD_NOT_FOUND",
-          message: "Child not found",
-        },
-      });
+      throw new AppError(400, "INVALID_CHILD_ID", "Invalid child ID");
     }
 
     return res.status(204).send();
