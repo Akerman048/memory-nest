@@ -203,19 +203,30 @@ export default function Home() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <a
+            <Link
               href="/login"
               className="hidden rounded-full border border-primary/20 bg-white/20 px-5 py-2.5 text-sm font-semibold transition hover:bg-white/50 sm:inline-flex"
             >
               Log in
-            </a>
+            </Link>
 
-            <a
+            <Link
               href="/register"
-              className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-[0_10px_30px_rgba(15,60,101,0.22)] transition hover:-translate-y-0.5 hover:bg-primary-hover"
+              className="
+    rounded-full
+    bg-accent
+    px-6 py-3
+    text-sm font-semibold
+    text-accent-foreground
+    shadow-[0_10px_30px_rgba(15,60,101,0.12)]
+    transition-all duration-200
+    hover:-translate-y-0.5
+    hover:bg-accent-hover
+    hover:shadow-[0_14px_34px_rgba(15,60,101,0.18)]
+  "
             >
               Get started
-            </a>
+            </Link>
           </div>
         </div>
       </header>
@@ -225,15 +236,14 @@ export default function Home() {
           <div className="mx-auto grid w-full max-w-7xl items-center gap-14 lg:grid-cols-[1fr_0.82fr] lg:gap-20">
             <div>
               <div className="glass mb-7 inline-flex items-center gap-3 rounded-full px-4 py-2.5 text-sm font-medium">
-                <Icon name="lock" className="size-4" />
-                A private home for your family memories
+                <Icon name="lock" className="size-4" />A private home for your
+                family memories
               </div>
 
               <h1 className="text-balance max-w-3xl text-5xl font-bold leading-[0.98] tracking-[-0.065em] sm:text-6xl lg:text-[76px]">
                 Cherish today.
                 <span className="mt-2 block">
-                  Treasure{" "}
-                  <span className="text-[#e9bd55]">forever.</span>
+                  Treasure <span className="text-[#e9bd55]">forever.</span>
                 </span>
               </h1>
 
@@ -243,15 +253,27 @@ export default function Home() {
               </p>
 
               <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-                <a
+                <Link
                   href="/register"
-                  className="inline-flex items-center justify-center gap-3 rounded-full bg-primary px-7 py-4 font-semibold text-white shadow-[0_14px_36px_rgba(15,60,101,0.2)] transition hover:-translate-y-1 hover:bg-primary-hover"
+                  className="
+    inline-flex items-center justify-center gap-3
+    rounded-full
+    bg-primary
+    px-7 py-4
+    font-semibold
+    text-primary-foreground
+    shadow-[0_14px_36px_rgba(15,60,101,0.22)]
+    transition-all duration-200
+    hover:-translate-y-1
+    hover:bg-primary-hover
+    hover:shadow-[0_18px_42px_rgba(15,60,101,0.28)]
+  "
                 >
                   Create your nest
                   <Icon name="arrow" className="size-5" />
-                </a>
+                </Link>
 
-                <a
+                <Link
                   href="#features"
                   className="glass inline-flex items-center justify-center gap-3 rounded-full px-7 py-4 font-semibold transition hover:-translate-y-1 hover:bg-white/70"
                 >
@@ -259,7 +281,7 @@ export default function Home() {
                   <span className="flex size-6 items-center justify-center rounded-full border border-primary/25">
                     ▶
                   </span>
-                </a>
+                </Link>
               </div>
 
               <div className="glass mt-11 grid max-w-xl gap-4 rounded-[24px] px-5 py-4 text-sm sm:grid-cols-3">
@@ -410,10 +432,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section
-          id="about"
-          className="px-4 py-10 sm:px-6 lg:px-8 lg:py-14"
-        >
+        <section id="about" className="px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
           <div className="mx-auto grid w-full max-w-7xl gap-6 lg:grid-cols-[0.95fr_1.05fr]">
             <article className="relative min-h-[390px] overflow-hidden rounded-[36px] border border-white/90 bg-accent p-8 shadow-[0_24px_70px_rgba(15,60,101,0.1)] sm:p-10">
               <div className="absolute -bottom-24 -right-16 size-80 rounded-full border border-primary/10" />
@@ -430,39 +449,46 @@ export default function Home() {
                   </h2>
 
                   <p className="mt-5 max-w-sm text-lg leading-8 text-primary/70">
-                    Because the little things often become the biggest
-                    memories.
+                    Because the little things often become the biggest memories.
                   </p>
                 </div>
 
-                <a
+                <Link
                   href="/register"
-                  className="mt-10 inline-flex w-fit items-center gap-3 rounded-full bg-primary px-6 py-3.5 font-semibold text-white transition hover:-translate-y-1 hover:bg-primary-hover"
+                  className="
+    mt-10 inline-flex w-fit items-center gap-3
+    rounded-full
+    bg-primary
+    px-7 py-4
+    font-semibold
+    text-primary-foreground
+    shadow-[0_12px_30px_rgba(15,60,101,0.2)]
+    transition-all duration-200
+    hover:-translate-y-0.5
+    hover:bg-primary-hover
+  "
                 >
                   Start your journey
                   <Icon name="arrow" className="size-5" />
-                </a>
+                </Link>
               </div>
             </article>
 
-            <article
-              id="memories"
-              className="glass rounded-[36px] p-5 sm:p-7"
-            >
+            <article id="memories" className="glass rounded-[36px] p-5 sm:p-7">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold">Recent memories</h2>
 
-                <a
+                <Link
                   href="/register"
                   className="text-sm font-medium hover:opacity-60"
                 >
                   See all
-                </a>
+                </Link>
               </div>
 
               <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {gallery.map((image) => (
-                  <a
+                  <Link
                     key={image.src}
                     href="/register"
                     className="group relative overflow-hidden rounded-[20px]"
@@ -474,7 +500,7 @@ export default function Home() {
                     />
 
                     <div className="absolute inset-0 bg-primary/0 transition group-hover:bg-primary/10" />
-                  </a>
+                  </Link>
                 ))}
               </div>
             </article>
@@ -497,9 +523,7 @@ export default function Home() {
                   close to our hearts.
                 </blockquote>
 
-                <p className="mt-4 text-sm text-muted">
-                  Sophie, mother of two
-                </p>
+                <p className="mt-4 text-sm text-muted">Sophie, mother of two</p>
               </div>
             </div>
 
@@ -533,7 +557,7 @@ export default function Home() {
 
             <a
               href="/register"
-              className="mt-9 inline-flex items-center gap-3 rounded-full bg-accent px-7 py-4 font-bold text-primary transition hover:-translate-y-1 hover:bg-accent-hover"
+              className="mt-9 inline-flex items-center gap-3 rounded-full bg-accent px-7 py-4 font-bold text-accent-foreground transition-all duration-200 hover:-translate-y-1 hover:bg-accent-hover hover:shadow-[0_16px_38px_rgba(0,0,0,0.14)] active:translate-y-0"
             >
               Create your Memory Nest
               <Icon name="arrow" className="size-5" />
@@ -553,17 +577,17 @@ export default function Home() {
           </div>
 
           <div className="flex flex-wrap gap-6">
-            <a href="/privacy" className="transition hover:text-foreground">
+            <Link href="/privacy" className="transition hover:text-foreground">
               Privacy
-            </a>
+            </Link>
 
-            <a href="/terms" className="transition hover:text-foreground">
+            <Link href="/terms" className="transition hover:text-foreground">
               Terms
-            </a>
+            </Link>
 
-            <a href="/contact" className="transition hover:text-foreground">
+            <Link href="/contact" className="transition hover:text-foreground">
               Contact
-            </a>
+            </Link>
           </div>
         </div>
       </footer>
