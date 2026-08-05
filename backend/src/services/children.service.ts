@@ -12,11 +12,13 @@ import {
 type CreateChildInput = {
   name: string;
   birthDate?: string | null;
+  expectedBirthDate?: string | null;
 };
 
 type UpdateChildInput = {
   name?: string;
   birthDate?: string | null;
+  expectedBirthDate?: string | null;
 };
 
 export const getChildrenService = async (userId: number) => {
@@ -58,6 +60,7 @@ export const createChildService = async (
   }
 
   let birthDate: Date | null = null;
+  let expectedBirthDate: Date | null = null;
 
   if (input.birthDate) {
     birthDate = new Date(input.birthDate);
@@ -79,9 +82,29 @@ export const createChildService = async (
     }
   }
 
+  if (input.expectedBirthDate) {
+    expectedBirthDate = new Date(input.expectedBirthDate);
+
+    if (Number.isNaN(expectedBirthDate.getTime())) {
+      throw new AppError(400, "INVALID_EXPECTED_BIRTH_DATE", "Invalid expected birth date");
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (expectedBirthDate < today) {
+      throw new AppError(
+        400,
+        "EXPECTED_BIRTH_DATE_IN_PAST",
+        "Expected birth date cannot be in the past",
+      );
+    }
+  }
+
   return createChildRepository(userId, {
     name,
     birthDate,
+    expectedBirthDate,
   });
 };
 
@@ -118,6 +141,7 @@ export const updateChildService = async (
   const data: {
     name?: string;
     birthDate?: Date | null;
+    expectedBirthDate?: Date | null;
   } = {};
 
   if (input.name !== undefined) {
@@ -157,6 +181,31 @@ export const updateChildService = async (
       }
 
       data.birthDate = birthDate;
+    }
+  }
+
+  if (input.expectedBirthDate !== undefined) {
+    if (input.expectedBirthDate === null) {
+      data.expectedBirthDate = null;
+    } else {
+      const expectedBirthDate = new Date(input.expectedBirthDate);
+
+      if (Number.isNaN(expectedBirthDate.getTime())) {
+        throw new AppError(400, "INVALID_EXPECTED_BIRTH_DATE", "Invalid expected birth date");
+      }
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      if (expectedBirthDate < today) {
+        throw new AppError(
+          400,
+          "EXPECTED_BIRTH_DATE_IN_PAST",
+          "Expected birth date cannot be in the past",
+        );
+      }
+
+      data.expectedBirthDate = expectedBirthDate;
     }
   }
 

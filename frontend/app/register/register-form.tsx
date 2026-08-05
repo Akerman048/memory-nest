@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const roles = [
   { value: "PARENT", label: "Parent", description: "Mum, dad or parent" },
@@ -13,10 +14,10 @@ const roles = [
 type AccountRole = (typeof roles)[number]["value"];
 
 export function RegisterForm() {
+  const router = useRouter();
   const [accountRole, setAccountRole] = useState<AccountRole>("PARENT");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [createdName, setCreatedName] = useState("");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -39,6 +40,7 @@ export function RegisterForm() {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
       const response = await fetch(`${apiUrl}/api/auth/register`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password, accountRole }),
       });
@@ -48,7 +50,7 @@ export function RegisterForm() {
         throw new Error(payload?.error?.message ?? "We could not create your account.");
       }
 
-      setCreatedName(payload.data.user.name);
+      router.push("/profile");
     } catch (caughtError) {
       setError(
         caughtError instanceof Error
@@ -58,21 +60,6 @@ export function RegisterForm() {
     } finally {
       setIsSubmitting(false);
     }
-  }
-
-  if (createdName) {
-    return (
-      <div className="mt-10 rounded-[28px] border border-primary/10 bg-white/65 p-7 text-center shadow-sm">
-        <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-accent text-2xl">✓</span>
-        <h3 className="mt-5 text-2xl font-bold">Welcome, {createdName}!</h3>
-        <p className="mt-3 leading-7 text-muted">
-          Your account is ready. The next step will be creating your child&apos;s profile.
-        </p>
-        <Link href="/" className="mt-6 inline-flex rounded-full bg-primary px-6 py-3 font-semibold text-white transition hover:bg-primary-hover">
-          Return home
-        </Link>
-      </div>
-    );
   }
 
   return (

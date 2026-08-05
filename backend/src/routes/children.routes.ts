@@ -14,8 +14,11 @@ import {
   updateChildSchema,
 } from "@/validations/child.validation.js";
 import { validateParams } from "@/middleware/validateParams.middleware.js";
+import { requireAuth } from "@/middleware/auth.middleware.js";
 
 export const childrenRouter = Router();
+
+childrenRouter.use(requireAuth);
 
 childrenRouter.get("/", getChildren);
 

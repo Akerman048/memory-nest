@@ -2,10 +2,10 @@
 
 ## Must have
 
-- [] User registration
+- [x] User registration
 - [] User login
 - [] User logout
-- [] Create child profile
+- [x] Create child profile
 - [] Edit child profile
 - [] Upload photo
 - [] Upload video

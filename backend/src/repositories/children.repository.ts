@@ -5,11 +5,13 @@ import { prisma } from "../lib/prisma.js";
 type CreateChildData = {
   name: string;
   birthDate?: Date | null;
+  expectedBirthDate?: Date | null;
 };
 
 type UpdateChildData = {
   name?: string;
   birthDate?: Date | null;
+  expectedBirthDate?: Date | null;
 };
 
 export const findChildrenByUserIdRepository = async (
@@ -76,6 +78,10 @@ export const createChildRepository = async (
 
       ...(data.birthDate !== undefined && {
         birthDate: data.birthDate,
+      }),
+
+      ...(data.expectedBirthDate !== undefined && {
+        expectedBirthDate: data.expectedBirthDate,
       }),
 
       members: {
