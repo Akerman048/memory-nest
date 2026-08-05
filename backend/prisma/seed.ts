@@ -2,6 +2,7 @@ import "dotenv/config";
 
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client.js";
+import { hashPassword } from "../src/lib/password.js";
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -18,6 +19,8 @@ const prisma = new PrismaClient({
 });
 
 async function main() {
+  const passwordHash = await hashPassword("ChangeMe123!");
+
   const user = await prisma.user.upsert({
     where: {
       email: "valerii@example.com",
@@ -26,6 +29,8 @@ async function main() {
     create: {
       name: "Valerii",
       email: "valerii@example.com",
+      passwordHash,
+      accountRole: "PARENT",
     },
   });
 
