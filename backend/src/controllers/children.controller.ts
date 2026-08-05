@@ -22,7 +22,7 @@ export const getChildren = async (
   next: NextFunction,
 ) => {
   try {
-    const userId = 1;
+    const userId = res.locals.userId as number;
 
     const children = await getChildrenService(userId);
 
@@ -40,7 +40,7 @@ export const getChildById = async (
   next: NextFunction,
 ) => {
   try {
-    const userId = 1;
+    const userId = res.locals.userId as number;
 
     const { childId } =
       req.params as unknown as ValidatedChildParams;
@@ -64,7 +64,7 @@ export const createChild = async (
   next: NextFunction,
 ) => {
   try {
-    const userId = 1;
+    const userId = res.locals.userId as number;
 
     const child = await createChildService(
       userId,
@@ -85,7 +85,7 @@ export const updateChild = async (
   next: NextFunction,
 ) => {
   try {
-    const userId = 1;
+    const userId = res.locals.userId as number;
 
     const { childId } =
       req.params as unknown as ValidatedChildParams;
@@ -110,7 +110,7 @@ export const deleteChild = async (
   next: NextFunction,
 ) => {
   try {
-    const userId = 1;
+    const userId = res.locals.userId as number;
 
     const { childId } =
       req.params as unknown as ValidatedChildParams;
