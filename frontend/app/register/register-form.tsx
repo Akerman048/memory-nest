@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -12,9 +11,15 @@ const roles = [
 ] as const;
 
 type AccountRole = (typeof roles)[number]["value"];
+type AuthMode = "register" | "login";
 
-export function RegisterForm() {
+type AuthFormProps = {
+  initialMode?: AuthMode;
+};
+
+export function AuthForm({ initialMode = "register" }: AuthFormProps) {
   const router = useRouter();
+  const [mode, setMode] = useState<AuthMode>(initialMode);
   const [accountRole, setAccountRole] = useState<AccountRole>("PARENT");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -29,7 +34,7 @@ export function RegisterForm() {
     const password = String(form.get("password") ?? "");
     const confirmPassword = String(form.get("confirmPassword") ?? "");
 
-    if (password !== confirmPassword) {
+    if (mode === "register" && password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
@@ -38,11 +43,15 @@ export function RegisterForm() {
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
-      const response = await fetch(`${apiUrl}/api/auth/register`, {
+      const response = await fetch(`${apiUrl}/api/auth/${mode}`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, accountRole }),
+        body: JSON.stringify(
+          mode === "register"
+            ? { name, email, password, accountRole }
+            : { email, password },
+        ),
       });
       const payload = await response.json();
 
@@ -50,7 +59,7 @@ export function RegisterForm() {
         throw new Error(payload?.error?.message ?? "We could not create your account.");
       }
 
-      router.push("/profile");
+      router.push(mode === "register" ? "/profile" : "/");
     } catch (caughtError) {
       setError(
         caughtError instanceof Error
@@ -62,9 +71,41 @@ export function RegisterForm() {
     }
   }
 
+  function switchMode(nextMode: AuthMode) {
+    setMode(nextMode);
+    setError("");
+    router.replace(nextMode === "login" ? "/register?mode=login" : "/register", {
+      scroll: false,
+    });
+  }
+
   return (
-    <form className="mt-9 space-y-6" onSubmit={handleSubmit}>
-      <fieldset>
+    <div className="mt-3">
+      <div>
+        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-muted">
+          {mode === "register" ? "Step 1 of 2" : "Welcome back"}
+        </p>
+        <h2 className="mt-2 text-3xl font-bold tracking-[-0.045em] sm:text-4xl">
+          {mode === "register" ? "Create your account" : "Log in to your nest"}
+        </h2>
+        <p className="mt-3 leading-7 text-muted">
+          {mode === "register"
+            ? "First, tell us who is creating this family nest."
+            : "Continue collecting the moments that matter most."}
+        </p>
+      </div>
+
+      <div className="mt-7 grid grid-cols-2 rounded-full bg-primary/5 p-1">
+        <button type="button" onClick={() => switchMode("register")} className={`rounded-full px-4 py-2.5 text-sm font-semibold transition ${mode === "register" ? "bg-white text-primary shadow-sm" : "text-muted hover:text-primary"}`}>
+          Create account
+        </button>
+        <button type="button" onClick={() => switchMode("login")} className={`rounded-full px-4 py-2.5 text-sm font-semibold transition ${mode === "login" ? "bg-white text-primary shadow-sm" : "text-muted hover:text-primary"}`}>
+          Log in
+        </button>
+      </div>
+
+      <form className="mt-7 space-y-6" onSubmit={handleSubmit}>
+      {mode === "register" ? <fieldset>
         <legend className="text-sm font-semibold">I am a...</legend>
         <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
           {roles.map((role) => (
@@ -91,28 +132,32 @@ export function RegisterForm() {
             </label>
           ))}
         </div>
-      </fieldset>
+      </fieldset> : null}
 
       <div className="grid gap-5 sm:grid-cols-2">
+        {mode === "register" ? (
         <label className="sm:col-span-2">
           <span className="text-sm font-semibold">Your name</span>
           <input name="name" type="text" autoComplete="name" minLength={2} maxLength={80} required placeholder="Alex Morgan" className="mt-2 w-full rounded-2xl border border-primary/15 bg-white/60 px-4 py-3.5 outline-none transition placeholder:text-primary/30 focus:border-primary/45 focus:bg-white" />
         </label>
+        ) : null}
 
         <label className="sm:col-span-2">
           <span className="text-sm font-semibold">Email address</span>
           <input name="email" type="email" autoComplete="email" required placeholder="alex@example.com" className="mt-2 w-full rounded-2xl border border-primary/15 bg-white/60 px-4 py-3.5 outline-none transition placeholder:text-primary/30 focus:border-primary/45 focus:bg-white" />
         </label>
 
-        <label>
+        <label className={mode === "login" ? "sm:col-span-2" : undefined}>
           <span className="text-sm font-semibold">Password</span>
-          <input name="password" type="password" autoComplete="new-password" minLength={8} maxLength={128} required placeholder="At least 8 characters" className="mt-2 w-full rounded-2xl border border-primary/15 bg-white/60 px-4 py-3.5 outline-none transition placeholder:text-primary/30 focus:border-primary/45 focus:bg-white" />
+          <input name="password" type="password" autoComplete={mode === "login" ? "current-password" : "new-password"} minLength={mode === "register" ? 8 : 1} maxLength={128} required placeholder={mode === "login" ? "Your password" : "At least 8 characters"} className="mt-2 w-full rounded-2xl border border-primary/15 bg-white/60 px-4 py-3.5 outline-none transition placeholder:text-primary/30 focus:border-primary/45 focus:bg-white" />
         </label>
 
+        {mode === "register" ? (
         <label>
           <span className="text-sm font-semibold">Confirm password</span>
           <input name="confirmPassword" type="password" autoComplete="new-password" minLength={8} maxLength={128} required placeholder="Repeat your password" className="mt-2 w-full rounded-2xl border border-primary/15 bg-white/60 px-4 py-3.5 outline-none transition placeholder:text-primary/30 focus:border-primary/45 focus:bg-white" />
         </label>
+        ) : null}
       </div>
 
       {error ? (
@@ -121,18 +166,24 @@ export function RegisterForm() {
         </p>
       ) : null}
 
-      <label className="flex items-start gap-3 text-sm leading-6 text-muted">
+      {mode === "register" ? <label className="flex items-start gap-3 text-sm leading-6 text-muted">
         <input type="checkbox" required className="mt-1 size-4 accent-primary" />
         <span>I agree to the Terms of Service and Privacy Policy.</span>
-      </label>
+      </label> : null}
 
       <button type="submit" disabled={isSubmitting} className="flex w-full items-center justify-center rounded-full bg-primary px-7 py-4 font-semibold text-white shadow-[0_14px_36px_rgba(15,60,101,0.2)] transition hover:-translate-y-0.5 hover:bg-primary-hover disabled:cursor-wait disabled:opacity-60">
-        {isSubmitting ? "Creating your account..." : "Create my account"}
+        {isSubmitting
+          ? mode === "register" ? "Creating your account..." : "Logging in..."
+          : mode === "register" ? "Create my account" : "Log in"}
       </button>
 
       <p className="text-center text-sm text-muted">
-        Already have an account? <Link href="/login" className="font-semibold text-primary hover:underline">Log in</Link>
+        {mode === "register" ? "Already have an account? " : "New to Memory Nest? "}
+        <button type="button" onClick={() => switchMode(mode === "register" ? "login" : "register")} className="font-semibold text-primary hover:underline">
+          {mode === "register" ? "Log in" : "Create an account"}
+        </button>
       </p>
-    </form>
+      </form>
+    </div>
   );
 }

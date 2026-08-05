@@ -204,7 +204,7 @@ export default function Home() {
 
           <div className="flex items-center gap-2">
             <Link
-              href="/login"
+              href="/register?mode=login"
               className="hidden rounded-full border border-primary/20 bg-white/20 px-5 py-2.5 text-sm font-semibold transition hover:bg-white/50 sm:inline-flex"
             >
               Log in
