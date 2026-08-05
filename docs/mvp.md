@@ -3,7 +3,7 @@
 ## Must have
 
 - [x] User registration
-- [] User login
+- [x] User login
 - [] User logout
 - [x] Create child profile
 - [] Edit child profile
