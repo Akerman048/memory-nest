@@ -59,7 +59,7 @@ export function AuthForm({ initialMode = "register" }: AuthFormProps) {
         throw new Error(payload?.error?.message ?? "We could not create your account.");
       }
 
-      router.push(mode === "register" ? "/profile" : "/");
+      router.push(mode === "register" ? "/profile" : "/dashboard");
     } catch (caughtError) {
       setError(
         caughtError instanceof Error
