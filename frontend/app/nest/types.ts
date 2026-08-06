@@ -18,13 +18,6 @@ export const memoryKindLabels: Record<MemoryKind, string> = {
   milestone: "Milestone",
 };
 
-export const memoryKindIcons: Record<MemoryKind, string> = {
-  photo: "▧",
-  video: "▶",
-  note: "✎",
-  milestone: "★",
-};
-
 export const starterMemories: Memory[] = [
   {
     id: "welcome-1",
