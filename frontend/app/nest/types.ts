@@ -11,20 +11,17 @@ export type Memory = {
   createdAt: string;
 };
 
+export type NewMemoryInput = {
+  title: string;
+  description: string;
+  date: string;
+  kind: MemoryKind;
+  file?: File;
+};
+
 export const memoryKindLabels: Record<MemoryKind, string> = {
   photo: "Photo",
   video: "Video",
   note: "Story",
   milestone: "Milestone",
 };
-
-export const starterMemories: Memory[] = [
-  {
-    id: "welcome-1",
-    title: "Welcome to your family nest",
-    description: "Your first memories will appear here. Add a photo, video, milestone or little story.",
-    date: new Date().toISOString().slice(0, 10),
-    kind: "note",
-    createdAt: new Date().toISOString(),
-  },
-];
