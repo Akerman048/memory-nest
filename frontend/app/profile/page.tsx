@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { FiArrowLeft, FiFeather, FiHeart } from "react-icons/fi";
 
 import { ChildProfileForm } from "./profile-form";
 
 export const metadata: Metadata = {
-  title: "Create a child profile | Memory Nest",
-  description: "Create the first child profile in your private family nest.",
+  title: "Child profile settings | Memory Nest",
+  description: "Create or update the child profile in your private family nest.",
 };
 
 export default function ProfilePage() {
@@ -17,19 +18,29 @@ export default function ProfilePage() {
       <div className="glass-strong relative z-10 w-full max-w-3xl rounded-[36px] p-6 sm:p-10 lg:p-12">
         <div className="flex items-center justify-between gap-5">
           <Link href="/" className="flex items-center gap-3 font-bold">
-            <span className="flex size-11 items-center justify-center rounded-2xl bg-accent text-2xl">⌁</span>
+            <span className="flex size-11 items-center justify-center rounded-2xl bg-accent text-xl">
+              <FiFeather aria-hidden="true" />
+            </span>
             <span className="text-xl tracking-[-0.03em]">Memory Nest</span>
           </Link>
-          <span className="rounded-full border border-primary/10 bg-white/50 px-4 py-2 text-sm font-semibold text-muted">
-            Step 2 of 2
-          </span>
+          <div className="flex items-center gap-2">
+            <Link href="/dashboard" className="flex items-center gap-2 rounded-full border border-primary/10 bg-white/55 px-4 py-2 text-sm font-semibold transition hover:bg-white">
+              <FiArrowLeft aria-hidden="true" />
+              Back
+            </Link>
+            <span className="hidden rounded-full border border-primary/10 bg-white/50 px-4 py-2 text-sm font-semibold text-muted sm:inline-flex">
+              Profile settings
+            </span>
+          </div>
         </div>
 
         <div className="mx-auto mt-10 max-w-xl text-center">
-          <span className="mx-auto flex size-20 items-center justify-center rounded-[28px] bg-accent text-4xl shadow-sm">♡</span>
-          <h1 className="mt-6 text-4xl font-bold tracking-[-0.055em] sm:text-5xl">Who is this nest for?</h1>
+          <span className="mx-auto flex size-20 items-center justify-center rounded-[28px] bg-accent text-4xl shadow-sm">
+            <FiHeart aria-hidden="true" />
+          </span>
+          <h1 className="mt-6 text-4xl font-bold tracking-[-0.055em] sm:text-5xl">Child profile</h1>
           <p className="mt-4 text-lg leading-8 text-muted">
-            Start with a few details. You can add photos, milestones and stories after the profile is created.
+            Keep the details behind your family memories accurate and up to date.
           </p>
         </div>
 
