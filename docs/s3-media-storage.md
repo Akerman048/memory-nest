@@ -18,6 +18,25 @@ aws cloudformation deploy \
 
 For local browser uploads, temporarily deploy with `FrontendOrigin=http://localhost:3000`. An S3 CORS rule accepts only one exact origin in this template; add both production and local origins manually when both environments must work simultaneously.
 
+For an existing bucket, configure the following CORS rule in **S3 → bucket → Permissions → Cross-origin resource sharing (CORS)**. Replace the origins with the exact URLs that serve the frontend:
+
+```json
+[
+  {
+    "AllowedOrigins": [
+      "http://localhost:3000",
+      "https://YOUR_FRONTEND_DOMAIN"
+    ],
+    "AllowedMethods": ["GET", "HEAD", "PUT"],
+    "AllowedHeaders": ["*"],
+    "ExposeHeaders": ["ETag", "Content-Length", "Content-Type", "Accept-Ranges"],
+    "MaxAgeSeconds": 3600
+  }
+]
+```
+
+Changing or inspecting this bucket setting requires `s3:PutBucketCORS` or `s3:GetBucketCORS`. Grant those administration permissions only to the identity that provisions the bucket; the application identity does not need them during normal operation.
+
 The template enables encryption at rest, blocks every form of public access, disables ACLs through `BucketOwnerEnforced`, requires TLS, and retains the bucket if the CloudFormation stack is deleted.
 
 ## 2. Grant the backend least-privilege access
@@ -52,6 +71,8 @@ Copy `backend/.env.example` to `backend/.env` and set:
 AWS_REGION=eu-west-1
 AWS_S3_BUCKET=your-private-bucket-name
 ```
+
+`AWS_BUCKET_NAME` is also accepted as a backward-compatible alias for `AWS_S3_BUCKET`.
 
 The AWS SDK uses its default Node.js credential provider chain. On AWS infrastructure, configure the task, instance, Lambda, or service role. For local development only, `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` can be placed in the ignored `backend/.env` file; temporary credentials additionally require `AWS_SESSION_TOKEN`.
 

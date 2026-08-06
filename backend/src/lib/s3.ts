@@ -16,7 +16,7 @@ let client: S3Client | undefined;
 
 const getConfig = () => {
   const region = process.env.AWS_REGION;
-  const bucket = process.env.AWS_S3_BUCKET;
+  const bucket = process.env.AWS_S3_BUCKET ?? process.env.AWS_BUCKET_NAME;
 
   if (!region || !bucket) {
     throw new AppError(
