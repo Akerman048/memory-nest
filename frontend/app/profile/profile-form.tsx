@@ -54,7 +54,7 @@ export function ChildProfileForm() {
         <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-accent text-2xl">✓</span>
         <h2 className="mt-5 text-2xl font-bold">{createdName}&apos;s nest is ready!</h2>
         <p className="mt-3 leading-7 text-muted">You can now begin adding the moments that matter most.</p>
-        <Link href="/" className="mt-6 inline-flex rounded-full bg-primary px-7 py-3.5 font-semibold text-white transition hover:bg-primary-hover">
+        <Link href="/dashboard" className="mt-6 inline-flex rounded-full bg-primary px-7 py-3.5 font-semibold text-white transition hover:bg-primary-hover">
           Go to my nest
         </Link>
       </div>
