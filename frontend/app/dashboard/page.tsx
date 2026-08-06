@@ -11,12 +11,13 @@ import { useMemories } from "../nest/use-memories";
 
 export default function DashboardPage() {
   const [adding, setAdding] = useState(false);
-  const { memories, isReady, addMemory, deleteMemory } = useMemories();
+  const { memories, isReady, error, addMemory, deleteMemory } = useMemories();
   const recent = [...memories].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
 
   return (
     <NestShell onAdd={() => setAdding(true)}>
       <main className="mx-auto max-w-7xl px-5 pb-28 pt-8 sm:px-8 lg:px-12 lg:pb-12 lg:pt-12">
+        {error ? <p role="alert" className="mb-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p> : null}
         <section className="relative overflow-hidden rounded-[34px] bg-primary px-6 py-9 text-primary-foreground shadow-xl sm:px-10 sm:py-12">
           <div className="absolute -right-16 -top-16 size-64 rounded-full bg-accent/20 blur-2xl" /><div className="relative max-w-2xl"><p className="text-sm font-semibold text-primary-soft">Thursday, 6 August</p><h1 className="mt-3 text-4xl font-bold tracking-[-0.055em] sm:text-5xl">Good morning, Alex.</h1><p className="mt-4 max-w-xl text-base leading-7 text-primary-soft sm:text-lg">What little moment would you like to keep today?</p><button onClick={() => setAdding(true)} className="mt-7 flex items-center gap-2 rounded-full bg-accent px-6 py-3.5 font-bold text-accent-foreground transition hover:-translate-y-0.5 hover:bg-accent-hover"><FiPlus aria-hidden="true" />Add today&apos;s memory</button></div>
         </section>

@@ -20,6 +20,18 @@ enum AccountRole {
   OTHER
 }
 
+enum MemoryKind {
+  PHOTO
+  VIDEO
+  NOTE
+  MILESTONE
+}
+
+enum MediaStatus {
+  PENDING
+  READY
+}
+
 model User {
   id               Int           @id @default(autoincrement())
   name             String
@@ -28,6 +40,7 @@ model User {
   accountRole      AccountRole
   sessions         Session[]
   childMemberships ChildMember[]
+  memories         Memory[]
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
 }
@@ -50,8 +63,48 @@ model Child {
   birthDate         DateTime?
   expectedBirthDate DateTime?
   members           ChildMember[]
+  memories          Memory[]
+  mediaAssets       MediaAsset[]
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
+}
+
+model Memory {
+  id           String      @id @default(uuid())
+  childId      Int
+  authorId     Int
+  mediaAssetId String?     @unique
+  kind         MemoryKind
+  title        String
+  description  String      @default("")
+  capturedAt   DateTime
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  child      Child       @relation(fields: [childId], references: [id], onDelete: Cascade)
+  author     User        @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  mediaAsset MediaAsset? @relation(fields: [mediaAssetId], references: [id], onDelete: SetNull)
+
+  @@index([childId, capturedAt])
+  @@index([authorId])
+}
+
+model MediaAsset {
+  id          String      @id @default(uuid())
+  childId     Int
+  objectKey   String      @unique
+  fileName    String
+  contentType String
+  sizeBytes   Int
+  status      MediaStatus @default(PENDING)
+  uploadedAt  DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  child  Child   @relation(fields: [childId], references: [id], onDelete: Cascade)
+  memory Memory?
+
+  @@index([childId, status])
 }
 
 model ChildMember {
