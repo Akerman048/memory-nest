@@ -46,7 +46,7 @@ export default function TimelinePage() {
   const [filter, setFilter] = useState<TimelineFilter>("all");
   const [query, setQuery] = useState("");
   const [sortDirection, setSortDirection] = useState<SortDirection>("newest");
-  const { memories, addMemory, deleteMemory } = useMemories();
+  const { memories, error, addMemory, deleteMemory } = useMemories();
 
   const filteredMemories = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -102,6 +102,11 @@ export default function TimelinePage() {
   return (
     <NestShell onAdd={() => setAdding(true)}>
       <main className="mx-auto max-w-7xl px-5 pb-28 pt-8 sm:px-8 lg:px-12 lg:pb-16 lg:pt-12">
+        {error ? (
+          <p role="alert" className="mb-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {error}
+          </p>
+        ) : null}
         <section className="overflow-hidden rounded-[34px] border border-primary/10 bg-surface-strong p-6 shadow-lg sm:p-9">
           <div className="flex flex-col justify-between gap-7 xl:flex-row xl:items-end">
             <div className="max-w-3xl">
