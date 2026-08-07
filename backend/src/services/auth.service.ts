@@ -6,8 +6,17 @@ import {
   SESSION_MAX_AGE_MS,
 } from "@/lib/session.js";
 import { createSession } from "@/repositories/sessions.repository.js";
-import { createUser, findUserByEmail } from "@/repositories/users.repository.js";
-import type { LoginInput, RegisterInput } from "@/validations/auth.validation.js";
+import {
+  createUser,
+  findUserByEmail,
+  findUserById,
+  updateUser,
+} from "@/repositories/users.repository.js";
+import type {
+  LoginInput,
+  RegisterInput,
+  UpdateProfileInput,
+} from "@/validations/auth.validation.js";
 
 const startSession = async (userId: number) => {
   const sessionToken = createSessionToken();
@@ -70,3 +79,19 @@ export const loginUser = async (input: LoginInput) => {
     sessionToken,
   };
 };
+
+export const getCurrentUser = async (userId: number) => {
+  const user = await findUserById(userId);
+
+  if (!user) {
+    throw new AppError(404, "USER_NOT_FOUND", "Your account could not be found");
+  }
+
+  return user;
+};
+
+export const updateCurrentUser = (userId: number, input: UpdateProfileInput) =>
+  updateUser(userId, {
+    name: input.name,
+    accountRole: input.accountRole as AccountRole,
+  });
