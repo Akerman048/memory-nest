@@ -18,3 +18,8 @@ export const findValidSession = (token: string) =>
     },
     select: { userId: true },
   });
+
+export const deleteSession = (token: string) =>
+  prisma.session.deleteMany({
+    where: { id: hashSessionToken(token) },
+  });

@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import {
   login,
+  logout,
   me,
   register,
   updateProfile,
@@ -18,5 +19,6 @@ export const authRouter = Router();
 
 authRouter.post("/register", validateBody(registerSchema), register);
 authRouter.post("/login", validateBody(loginSchema), login);
+authRouter.post("/logout", logout);
 authRouter.get("/me", requireAuth, me);
 authRouter.patch("/me", requireAuth, validateBody(updateProfileSchema), updateProfile);

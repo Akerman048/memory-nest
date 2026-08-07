@@ -5,7 +5,7 @@ import {
   createSessionToken,
   SESSION_MAX_AGE_MS,
 } from "@/lib/session.js";
-import { createSession } from "@/repositories/sessions.repository.js";
+import { createSession, deleteSession } from "@/repositories/sessions.repository.js";
 import {
   createUser,
   findUserByEmail,
@@ -95,3 +95,5 @@ export const updateCurrentUser = (userId: number, input: UpdateProfileInput) =>
     name: input.name,
     accountRole: input.accountRole as AccountRole,
   });
+
+export const logoutUser = (sessionToken: string) => deleteSession(sessionToken);

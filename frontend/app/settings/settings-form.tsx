@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { FiCheckCircle, FiMail, FiSave, FiShield, FiUser } from "react-icons/fi";
+import { FiCheckCircle, FiLogOut, FiMail, FiSave, FiShield, FiUser } from "react-icons/fi";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
@@ -30,6 +30,7 @@ export function AccountSettingsForm() {
   const [accountRole, setAccountRole] = useState<AccountRole>("PARENT");
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -102,6 +103,28 @@ export function AccountSettingsForm() {
     }
   }
 
+  async function handleLogout() {
+    setError("");
+    setIsLoggingOut(true);
+
+    try {
+      const response = await fetch(`${API_URL}/api/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error("We could not log you out. Please try again.");
+      }
+
+      router.replace("/register?mode=login");
+      router.refresh();
+    } catch (caughtError) {
+      setError(caughtError instanceof Error ? caughtError.message : "We could not log you out.");
+      setIsLoggingOut(false);
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="mt-10 grid gap-6 lg:grid-cols-[1fr_18rem]" aria-label="Loading account settings">
@@ -170,6 +193,10 @@ export function AccountSettingsForm() {
         <p className="mt-3 text-sm leading-6 text-primary-soft">
           Your account details are only used to identify you inside your private family nest.
         </p>
+        <button type="button" onClick={handleLogout} disabled={isLoggingOut} className="mt-6 flex w-full items-center justify-center gap-2 rounded-full border border-white/20 px-4 py-3 text-sm font-semibold transition hover:bg-white/10 disabled:cursor-wait disabled:opacity-60">
+          <FiLogOut aria-hidden="true" />
+          {isLoggingOut ? "Logging out..." : "Log out"}
+        </button>
         {profile?.createdAt ? (
           <p className="mt-6 border-t border-white/15 pt-5 text-xs text-primary-soft">
             Member since {new Intl.DateTimeFormat("en", { month: "long", year: "numeric" }).format(new Date(profile.createdAt))}
