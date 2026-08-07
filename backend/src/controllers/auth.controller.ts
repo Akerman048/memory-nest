@@ -16,15 +16,14 @@ import {
   SESSION_COOKIE_NAME,
   SESSION_MAX_AGE_MS,
 } from "@/lib/session.js";
+import { getSessionCookieOptions } from "@/lib/http-security.js";
 
 const setSessionCookie = (res: Response, sessionToken: string) => {
-  res.cookie(SESSION_COOKIE_NAME, sessionToken, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      maxAge: SESSION_MAX_AGE_MS,
-      path: "/",
-  });
+  res.cookie(
+    SESSION_COOKIE_NAME,
+    sessionToken,
+    getSessionCookieOptions(SESSION_MAX_AGE_MS),
+  );
 };
 
 export const register = async (
@@ -68,7 +67,7 @@ export const logout = async (
       await logoutUser(sessionToken);
     }
 
-    res.clearCookie(SESSION_COOKIE_NAME, { path: "/" });
+    res.clearCookie(SESSION_COOKIE_NAME, getSessionCookieOptions());
     return res.status(204).send();
   } catch (error) {
     return next(error);
