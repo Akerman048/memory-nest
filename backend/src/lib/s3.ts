@@ -3,6 +3,7 @@ import {
   GetObjectCommand,
   HeadObjectCommand,
   PutObjectCommand,
+  PutObjectTaggingCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
@@ -54,6 +55,7 @@ export const createUploadUrl = async (
     Key: objectKey,
     ContentType: contentType,
     ContentLength: sizeBytes,
+    Tagging: "scan-status=pending",
   });
 
   return getSignedUrl(getClient(), command, {
@@ -74,6 +76,52 @@ export const inspectObject = async (objectKey: string) => {
   const { bucket } = getConfig();
   return getClient().send(
     new HeadObjectCommand({ Bucket: bucket, Key: objectKey }),
+  );
+};
+
+export const readObjectPrefix = async (objectKey: string, bytes = 32) => {
+  const { bucket } = getConfig();
+  const result = await getClient().send(
+    new GetObjectCommand({
+      Bucket: bucket,
+      Key: objectKey,
+      Range: `bytes=0-${bytes - 1}`,
+    }),
+  );
+
+  if (!result.Body) {
+    throw new AppError(400, "EMPTY_MEDIA_FILE", "Uploaded media is empty");
+  }
+
+  return Buffer.from(await result.Body.transformToByteArray());
+};
+
+export const getObjectStream = async (objectKey: string) => {
+  const { bucket } = getConfig();
+  const result = await getClient().send(
+    new GetObjectCommand({ Bucket: bucket, Key: objectKey }),
+  );
+
+  if (!result.Body || !(Symbol.asyncIterator in result.Body)) {
+    throw new AppError(502, "MEDIA_READ_FAILED", "Uploaded media could not be scanned");
+  }
+
+  return result.Body as AsyncIterable<Uint8Array>;
+};
+
+export const setObjectScanStatus = async (
+  objectKey: string,
+  status: "clean" | "development-unscanned",
+) => {
+  const { bucket } = getConfig();
+  await getClient().send(
+    new PutObjectTaggingCommand({
+      Bucket: bucket,
+      Key: objectKey,
+      Tagging: {
+        TagSet: [{ Key: "scan-status", Value: status }],
+      },
+    }),
   );
 };
 

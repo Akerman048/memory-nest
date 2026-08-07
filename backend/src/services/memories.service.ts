@@ -3,6 +3,7 @@ import { extname } from "node:path";
 
 import { AppError } from "@/errors/app-error.js";
 import type { MemoryKind } from "@/generated/prisma/enums.js";
+import { validateUploadedMedia } from "@/lib/media-security.js";
 import { canManageChild } from "@/lib/permissions.js";
 import {
   createDownloadUrl,
@@ -91,7 +92,10 @@ export const createPresignedUploadService = async (
   return {
     assetId,
     uploadUrl,
-    headers: { "Content-Type": input.contentType },
+    headers: {
+      "Content-Type": input.contentType,
+      "x-amz-tagging": "scan-status=pending",
+    },
     expiresInSeconds: 600,
   };
 };
@@ -134,6 +138,8 @@ export const createMemoryService = async (
     ) {
       throw new AppError(400, "UPLOAD_MISMATCH", "Uploaded media does not match the requested file");
     }
+
+    await validateUploadedMedia(asset.objectKey, asset.contentType);
 
     mediaAssetId = asset.id;
   }
