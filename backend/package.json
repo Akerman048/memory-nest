@@ -8,6 +8,7 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit",
+    "auth:cleanup": "tsx src/scripts/cleanup-expired-auth.ts",
     "media:cleanup": "tsx src/scripts/cleanup-pending-media.ts"
   },
   "keywords": [],

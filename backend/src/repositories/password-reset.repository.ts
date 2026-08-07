@@ -33,3 +33,8 @@ export const resetPasswordWithToken = (
 
     return true;
   });
+
+export const deleteExpiredPasswordResetTokens = () =>
+  prisma.passwordResetToken.deleteMany({
+    where: { expiresAt: { lte: new Date() } },
+  });

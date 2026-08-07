@@ -23,3 +23,8 @@ export const deleteSession = (token: string) =>
   prisma.session.deleteMany({
     where: { id: hashSessionToken(token) },
   });
+
+export const deleteExpiredSessions = () =>
+  prisma.session.deleteMany({
+    where: { expiresAt: { lte: new Date() } },
+  });

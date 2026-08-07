@@ -39,3 +39,8 @@ export const verifyEmailWithToken = (tokenHash: string) =>
 
     return user;
   });
+
+export const deleteExpiredEmailVerificationTokens = () =>
+  prisma.emailVerificationToken.deleteMany({
+    where: { expiresAt: { lte: new Date() } },
+  });
