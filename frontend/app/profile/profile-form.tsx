@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { FiCheckCircle, FiSave } from "react-icons/fi";
+import { useRouter } from "next/navigation";
 
 type JourneyStage = "BORN" | "EXPECTED";
 
@@ -17,6 +18,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 const dateValue = (value: string | null) => value?.slice(0, 10) ?? "";
 
 export function ChildProfileForm() {
+  const router = useRouter();
   const today = new Date().toISOString().slice(0, 10);
   const [journeyStage, setJourneyStage] = useState<JourneyStage>("BORN");
   const [profile, setProfile] = useState<ChildProfile>();
@@ -100,6 +102,7 @@ export function ChildProfileForm() {
       setJourneyStage(savedStage);
       setDate(dateValue(savedStage === "BORN" ? savedProfile.birthDate : savedProfile.expectedBirthDate));
       setSuccess(profile ? "Profile changes saved." : "Child profile created and saved.");
+      router.replace("/dashboard");
     } catch (caughtError) {
       setError(caughtError instanceof Error ? caughtError.message : "We could not save the profile.");
     } finally {
