@@ -15,6 +15,7 @@ const publicUserSelect = {
   name: true,
   email: true,
   accountRole: true,
+  emailVerifiedAt: true,
   createdAt: true,
 } as const;
 

@@ -5,9 +5,11 @@ import {
   loginUser,
   logoutUser,
   registerUser,
+  resendVerificationEmail,
   requestPasswordReset,
   resetPassword,
   updateCurrentUser,
+  verifyEmail,
 } from "@/services/auth.service.js";
 import {
   readCookie,
@@ -31,8 +33,7 @@ export const register = async (
   next: NextFunction,
 ) => {
   try {
-    const { user, sessionToken } = await registerUser(req.body);
-    setSessionCookie(res, sessionToken);
+    const { user } = await registerUser(req.body);
 
     return res.status(201).json({ data: { user } });
   } catch (error) {
@@ -127,6 +128,37 @@ export const completePasswordReset = async (
     return res.status(200).json({
       data: { message: "Your password has been reset." },
     });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const resendVerification = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    await resendVerificationEmail(req.body);
+    return res.status(202).json({
+      data: {
+        message: "If the account needs verification, a new link has been sent.",
+      },
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const completeEmailVerification = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { user, sessionToken } = await verifyEmail(req.body);
+    setSessionCookie(res, sessionToken);
+    return res.status(200).json({ data: { user } });
   } catch (error) {
     return next(error);
   }

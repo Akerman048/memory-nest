@@ -33,17 +33,31 @@ enum MediaStatus {
 }
 
 model User {
-  id                  Int                  @id @default(autoincrement())
-  name                String
-  email               String               @unique
-  passwordHash        String
-  accountRole         AccountRole
-  sessions            Session[]
-  passwordResetTokens PasswordResetToken[]
-  childMemberships    ChildMember[]
-  memories            Memory[]
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
+  id                      Int                      @id @default(autoincrement())
+  name                    String
+  email                   String                   @unique
+  passwordHash            String
+  accountRole             AccountRole
+  emailVerifiedAt         DateTime?
+  sessions                Session[]
+  passwordResetTokens     PasswordResetToken[]
+  emailVerificationTokens EmailVerificationToken[]
+  childMemberships        ChildMember[]
+  memories                Memory[]
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+}
+
+model EmailVerificationToken {
+  id        String   @id
+  userId    Int
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 model PasswordResetToken {

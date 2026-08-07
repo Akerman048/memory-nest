@@ -57,10 +57,19 @@ export function AuthForm({ initialMode = "register" }: AuthFormProps) {
       const payload = await response.json();
 
       if (!response.ok) {
+        if (payload?.error?.code === "EMAIL_NOT_VERIFIED") {
+          router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+          return;
+        }
+
         throw new Error(payload?.error?.message ?? "We could not create your account.");
       }
 
-      router.push(mode === "register" ? "/profile" : "/dashboard");
+      router.push(
+        mode === "register"
+          ? `/verify-email?email=${encodeURIComponent(email)}`
+          : "/dashboard",
+      );
     } catch (caughtError) {
       setError(
         caughtError instanceof Error
