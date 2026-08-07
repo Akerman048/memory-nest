@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -150,6 +151,7 @@ export function AuthForm({ initialMode = "register" }: AuthFormProps) {
         <label className={mode === "login" ? "sm:col-span-2" : undefined}>
           <span className="text-sm font-semibold">Password</span>
           <input name="password" type="password" autoComplete={mode === "login" ? "current-password" : "new-password"} minLength={mode === "register" ? 8 : 1} maxLength={128} required placeholder={mode === "login" ? "Your password" : "At least 8 characters"} className="mt-2 w-full rounded-2xl border border-primary/15 bg-white/60 px-4 py-3.5 outline-none transition placeholder:text-primary/30 focus:border-primary/45 focus:bg-white" />
+          {mode === "login" ? <Link href="/forgot-password" className="mt-2 inline-block text-sm font-semibold hover:underline">Forgot your password?</Link> : null}
         </label>
 
         {mode === "register" ? (

@@ -1,10 +1,16 @@
 import { AppError } from "@/errors/app-error.js";
 import type { AccountRole } from "@/generated/prisma/enums.js";
+import { getFrontendUrl, sendTransactionalEmail } from "@/lib/email.js";
 import { hashPassword, verifyPassword } from "@/lib/password.js";
 import {
   createSessionToken,
+  hashSessionToken,
   SESSION_MAX_AGE_MS,
 } from "@/lib/session.js";
+import {
+  createPasswordResetToken,
+  resetPasswordWithToken,
+} from "@/repositories/password-reset.repository.js";
 import { createSession, deleteSession } from "@/repositories/sessions.repository.js";
 import {
   createUser,
@@ -13,8 +19,10 @@ import {
   updateUser,
 } from "@/repositories/users.repository.js";
 import type {
+  ForgotPasswordInput,
   LoginInput,
   RegisterInput,
+  ResetPasswordInput,
   UpdateProfileInput,
 } from "@/validations/auth.validation.js";
 
@@ -97,3 +105,48 @@ export const updateCurrentUser = (userId: number, input: UpdateProfileInput) =>
   });
 
 export const logoutUser = (sessionToken: string) => deleteSession(sessionToken);
+
+const PASSWORD_RESET_TTL_MS = 30 * 60 * 1000;
+
+export const requestPasswordReset = async (input: ForgotPasswordInput) => {
+  const user = await findUserByEmail(input.email);
+  if (!user) return;
+
+  const token = createSessionToken();
+  const tokenHash = hashSessionToken(token);
+  await createPasswordResetToken(
+    user.id,
+    tokenHash,
+    new Date(Date.now() + PASSWORD_RESET_TTL_MS),
+  );
+
+  const resetUrl = new URL("/reset-password", getFrontendUrl());
+  resetUrl.searchParams.set("token", token);
+
+  try {
+    await sendTransactionalEmail({
+      to: user.email,
+      subject: "Reset your Memory Nest password",
+      text: `Hello ${user.name},\n\nUse this secure link to reset your password:\n${resetUrl.toString()}\n\nThis link expires in 30 minutes. If you did not request it, you can ignore this email.`,
+      idempotencyKey: `password-reset-${tokenHash}`,
+    });
+  } catch (error) {
+    console.error("Could not deliver password reset email", error);
+  }
+};
+
+export const resetPassword = async (input: ResetPasswordInput) => {
+  const passwordHash = await hashPassword(input.password);
+  const reset = await resetPasswordWithToken(
+    hashSessionToken(input.token),
+    passwordHash,
+  );
+
+  if (!reset) {
+    throw new AppError(
+      400,
+      "INVALID_RESET_TOKEN",
+      "This password reset link is invalid or expired",
+    );
+  }
+};

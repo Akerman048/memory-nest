@@ -5,6 +5,8 @@ import {
   loginUser,
   logoutUser,
   registerUser,
+  requestPasswordReset,
+  resetPassword,
   updateCurrentUser,
 } from "@/services/auth.service.js";
 import {
@@ -93,6 +95,38 @@ export const updateProfile = async (
   try {
     const user = await updateCurrentUser(res.locals.userId as number, req.body);
     return res.status(200).json({ data: { user } });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const forgotPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    await requestPasswordReset(req.body);
+    return res.status(202).json({
+      data: {
+        message: "If an account exists for that email, a reset link has been sent.",
+      },
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const completePasswordReset = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    await resetPassword(req.body);
+    return res.status(200).json({
+      data: { message: "Your password has been reset." },
+    });
   } catch (error) {
     return next(error);
   }
