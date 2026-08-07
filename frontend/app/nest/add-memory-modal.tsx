@@ -7,6 +7,8 @@ import { memoryKindIcons } from "./memory-icons";
 import { MemoryKind, memoryKindLabels, NewMemoryInput } from "./types";
 
 const kinds = Object.keys(memoryKindLabels) as MemoryKind[];
+const allowedPhotoTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const allowedVideoTypes = ["video/mp4", "video/webm", "video/quicktime"];
 
 export function AddMemoryModal({ open, onClose, onAdd }: { open: boolean; onClose: () => void; onAdd: (memory: NewMemoryInput) => Promise<void> }) {
   const [kind, setKind] = useState<MemoryKind>("photo");
@@ -19,6 +21,12 @@ export function AddMemoryModal({ open, onClose, onAdd }: { open: boolean; onClos
     const file = event.target.files?.[0];
     setError("");
     if (!file) return;
+    const allowedTypes = kind === "photo" ? allowedPhotoTypes : allowedVideoTypes;
+    if (!allowedTypes.includes(file.type)) {
+      setError(`Choose a supported ${kind === "photo" ? "JPEG, PNG, WebP or GIF image" : "MP4, WebM or QuickTime video"}.`);
+      event.target.value = "";
+      return;
+    }
     const maxBytes = kind === "photo" ? 25 * 1024 * 1024 : 250 * 1024 * 1024;
     if (file.size > maxBytes) {
       setError(`${kind === "photo" ? "Photos" : "Videos"} must be ${kind === "photo" ? "25" : "250"} MB or smaller.`);
@@ -61,7 +69,7 @@ export function AddMemoryModal({ open, onClose, onAdd }: { open: boolean; onClos
         <div className="mt-6 grid gap-5 sm:grid-cols-2">
           <label className="sm:col-span-2"><span className="text-sm font-semibold">Title</span><input name="title" required maxLength={100} placeholder="A moment worth remembering" className="mt-2 w-full rounded-2xl border border-primary/15 bg-surface-strong px-4 py-3.5 outline-none focus:border-primary/40" /></label>
           <label><span className="text-sm font-semibold">Date</span><input name="date" type="date" required defaultValue={new Date().toISOString().slice(0, 10)} className="mt-2 w-full rounded-2xl border border-primary/15 bg-surface-strong px-4 py-3.5 outline-none" /></label>
-          {(kind === "photo" || kind === "video") ? <label><span className="text-sm font-semibold">{kind === "photo" ? "Photo" : "Video"}</span><input onChange={handleFile} type="file" accept={kind === "photo" ? "image/*" : "video/*"} required className="mt-2 block w-full text-sm file:mr-3 file:rounded-full file:border-0 file:bg-primary-soft file:px-4 file:py-3 file:font-semibold" /></label> : <div />}
+          {(kind === "photo" || kind === "video") ? <label><span className="text-sm font-semibold">{kind === "photo" ? "Photo" : "Video"}</span><input onChange={handleFile} type="file" accept={(kind === "photo" ? allowedPhotoTypes : allowedVideoTypes).join(",")} required className="mt-2 block w-full text-sm file:mr-3 file:rounded-full file:border-0 file:bg-primary-soft file:px-4 file:py-3 file:font-semibold" /></label> : <div />}
           <label className="sm:col-span-2"><span className="text-sm font-semibold">Story or note</span><textarea name="description" rows={4} maxLength={1000} placeholder="What made this moment special?" className="mt-2 w-full resize-none rounded-2xl border border-primary/15 bg-surface-strong px-4 py-3.5 outline-none focus:border-primary/40" /></label>
         </div>
         {error ? <p role="alert" className="mt-4 rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p> : null}

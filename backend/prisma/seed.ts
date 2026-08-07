@@ -31,6 +31,7 @@ async function main() {
       email: "valerii@example.com",
       passwordHash,
       accountRole: "PARENT",
+      emailVerifiedAt: new Date(),
     },
   });
 

@@ -53,6 +53,7 @@ Attach this policy to the IAM role used by the backend. For local development, i
       "Action": [
         "s3:GetObject",
         "s3:PutObject",
+        "s3:PutObjectTagging",
         "s3:DeleteObject"
       ],
       "Resource": "arn:aws:s3:::YOUR_BUCKET_NAME/children/*"
@@ -92,6 +93,19 @@ pnpm prisma generate
 - Download URLs expire after one hour.
 
 The API verifies the uploaded object's size and MIME type before associating it with a memory. An interrupted upload cannot be finalized as a memory.
+
+It also verifies file magic bytes and streams the full object through ClamAV before marking it ready. New objects are tagged `scan-status=pending`; clean objects are retagged `scan-status=clean`. Production fails closed when ClamAV is unavailable.
+
+Configure a private ClamAV daemon reachable from the backend:
+
+```dotenv
+CLAMAV_HOST=clamav.internal
+CLAMAV_PORT=3310
+CLAMAV_TIMEOUT_MS=120000
+CLAMAV_REQUIRED=true
+```
+
+Set ClamAV `StreamMaxLength` above the application video limit (currently 250 MB), and restrict port 3310 so only the backend can reach it. In local development, omitting `CLAMAV_HOST` skips malware scanning but still enforces size, MIME and magic-byte validation.
 
 ## Clean interrupted uploads
 
