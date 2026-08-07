@@ -1,6 +1,11 @@
 import type { NextFunction, Request, Response } from "express";
 
-import { loginUser, registerUser } from "@/services/auth.service.js";
+import {
+  getCurrentUser,
+  loginUser,
+  registerUser,
+  updateCurrentUser,
+} from "@/services/auth.service.js";
 import {
   SESSION_COOKIE_NAME,
   SESSION_MAX_AGE_MS,
@@ -40,6 +45,32 @@ export const login = async (
     const { user, sessionToken } = await loginUser(req.body);
     setSessionCookie(res, sessionToken);
 
+    return res.status(200).json({ data: { user } });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const me = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = await getCurrentUser(res.locals.userId as number);
+    return res.status(200).json({ data: { user } });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const updateProfile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = await updateCurrentUser(res.locals.userId as number, req.body);
     return res.status(200).json({ data: { user } });
   } catch (error) {
     return next(error);

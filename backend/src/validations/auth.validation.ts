@@ -18,3 +18,10 @@ export const loginSchema = z.object({
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;
+
+export const updateProfileSchema = z.object({
+  name: z.string().trim().min(2, "Name must contain at least 2 characters").max(80),
+  accountRole: z.enum(["PARENT", "GUARDIAN", "FAMILY_MEMBER", "OTHER"]),
+});
+
+export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;

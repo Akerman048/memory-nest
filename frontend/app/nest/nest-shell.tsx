@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ReactNode } from "react";
-import { FiClock, FiFeather, FiHome, FiLock, FiPlus, FiUser } from "react-icons/fi";
+import { FiClock, FiFeather, FiHome, FiLock, FiPlus, FiSettings, FiUser } from "react-icons/fi";
 
 const navItems = [
   { href: "/dashboard", label: "Home", icon: FiHome },
   { href: "/timeline", label: "Timeline", icon: FiClock },
   { href: "/profile", label: "Profile", icon: FiUser },
+  { href: "/settings", label: "Settings", icon: FiSettings },
 ];
 
 export function NestShell({ children, onAdd }: { children: ReactNode; onAdd?: () => void }) {
@@ -43,14 +44,14 @@ export function NestShell({ children, onAdd }: { children: ReactNode; onAdd?: ()
           <p className="hidden text-sm text-muted lg:block">A gentle place for all the moments that matter.</p>
           <div className="flex items-center gap-3">
             {onAdd ? <button onClick={onAdd} className="flex items-center gap-2 rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-md transition hover:-translate-y-0.5 hover:bg-primary-hover sm:px-5"><FiPlus aria-hidden="true" />Add memory</button> : null}
-            <span className="flex size-10 items-center justify-center rounded-full bg-primary-soft font-bold">A</span>
+            <Link href="/settings" aria-label="Account settings" className="flex size-10 items-center justify-center rounded-full bg-primary-soft font-bold transition hover:bg-accent">A</Link>
           </div>
         </header>
         {children}
       </div>
 
       <nav className="fixed inset-x-4 bottom-4 z-30 flex items-center justify-around rounded-[22px] border border-border bg-surface-strong p-2 shadow-xl backdrop-blur-xl lg:hidden">
-        {navItems.map((item) => <Link key={item.href} href={item.href} className={`flex min-w-20 flex-col items-center rounded-2xl px-3 py-2 text-xs font-semibold ${pathname === item.href ? "bg-primary text-primary-foreground" : "text-muted"}`}><item.icon className="text-lg" aria-hidden="true" />{item.label}</Link>)}
+        {navItems.map((item) => <Link key={item.href} href={item.href} className={`flex min-w-0 flex-1 flex-col items-center rounded-2xl px-2 py-2 text-xs font-semibold ${pathname === item.href ? "bg-primary text-primary-foreground" : "text-muted"}`}><item.icon className="text-lg" aria-hidden="true" />{item.label}</Link>)}
       </nav>
     </div>
   );
